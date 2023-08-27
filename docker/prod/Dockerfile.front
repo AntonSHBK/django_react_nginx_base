@@ -1,0 +1,26 @@
+##############
+# PRODUCTION #
+##############
+FROM node:20-alpine
+
+ARG SOURCE=../
+
+# create the appropriate directories
+# ENV HOME=/app
+ENV APP_HOME=/app/frontend
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
+
+# create the app user
+ARG CUID=1000
+RUN groupadd -g $CUID node
+RUN useradd -u $CUID -g node -s /bin/bash -m $APP_HOME
+
+# 
+COPY ./package*.json ./
+RUN yarn install
+
+# copy project
+# COPY ./frontend $APP_HOME
+
+USER node

@@ -1,0 +1,69 @@
+###########
+# BUILDER #
+###########
+
+# pull official base image
+FROM python:3.9.6-alpine as builder
+
+ARG SOURCE=../
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install psycopg2 dependencies
+RUN apk update 
+RUN apk add -y --no-cache\
+    postgresql-dev\
+    gcc\
+    python3-dev\
+    musl-dev\
+    bash\
+    zsh
+RUN  apk cache clean
+
+
+# lint
+# RUN pip install --upgrade pip
+# RUN pip install flake8==3.9.2
+# COPY . .
+# RUN flake8 --ignore=E501,F401 .
+
+# install dependencies
+RUN pip install --upgrade pip
+COPY $SOURCE/requirements/common.txt /tmp/common.txt
+COPY $SOURCE/requirements/production.txt /tmp/production.txt
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r /tmp/production.txt
+
+#########
+# FINAL #
+#########
+
+# pull official base image
+FROM python:3.9.6-alpine
+
+# create the appropriate directories
+# ENV HOME=/app
+ENV APP_HOME=/app/backend
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
+
+# create the app user
+ARG CUID=1000
+RUN groupadd -g $CUID portal
+RUN useradd -u $CUID -g portal -s /bin/bash -m $APP_HOME
+
+# copy project
+COPY $SOURCE/backend $APP_HOME
+
+# install dependencies
+RUN apk update && apk add libpq
+COPY --from=builder /usr/src/app/wheels /wheels
+COPY --from=builder /tmp/production.txt .
+RUN pip install --no-cache /wheels/*
+
+# chown all the files to the app user
+RUN chown -R portal:portal $APP_HOME
+
+# change to the app user
+USER portal
