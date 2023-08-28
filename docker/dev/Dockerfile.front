@@ -3,16 +3,13 @@
 ###############
 FROM node:20-alpine
 
-ARG SOURCE=../
-
 # create the appropriate directories
-# ENV HOME=/app
 ENV APP_HOME=/app/frontend
-RUN mkdir $APP_HOME
+RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
 # 
-COPY ./package*.json ./
+COPY frontend/package*.json ./
 RUN yarn install
 
 # copy project

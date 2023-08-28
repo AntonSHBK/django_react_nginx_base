@@ -1,8 +1,9 @@
 other
-frontend
 backend/static
 backend/media
 backend/static
+
+db
 
 
 

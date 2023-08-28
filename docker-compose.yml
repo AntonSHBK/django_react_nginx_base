@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: app-nansy
+    build:
+      context: .
+      dockerfile: ./docker/dev/Dockerfile.back    
+    working_dir: /app/backend
+    env_file:
+      - ./env/dev/.env
+    ports:
+      - "8000:8000"
+      - "5678:5678"
+    command:
+      - sh
+      - -c
+      - |
+        sleep 5s
+        python manage.py collectstatic --noinput
+        python manage.py makemigrations
+        python manage.py migrate
+        python -m debugpy --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app/backend
+    depends_on:
+      - db
+    networks:
+      - db-net
+      - backend
+
+
+  db:
+    image: postgres:14.3-alpine
+    env_file:
+      - ./env/dev/.db.env
+    ports:
+      - "5432:5432"
+    container_name: db-nansy
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    networks:
+      - db-net
+
+
+  nodejs:
+    container_name: nodejs-nansy
+    build:
+      context: .
+      dockerfile: ./docker/dev/Dockerfile.front
+    ports:
+      - 3000:3000
+    networks:
+      - backend
+    volumes:
+      - ./frontend:/app/frontend
+    depends_on:
+      - app
+    command: npm run start
+  
+networks:
+  backend:
+    driver:  default
+    ipam:
+      driver: bridge
+      config:
+        - subnet: 127.28.0.0/16
+  db-net:
+    driver: bridge
+
+  
+

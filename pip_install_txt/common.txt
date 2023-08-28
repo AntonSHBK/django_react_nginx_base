@@ -1,0 +1,11 @@
+# Main package
+# https://docs.djangoproject.com/en/4.2/
+django==4.2.3
+
+# Django REST framework
+# https://www.django-rest-framework.org/
+djangorestframework==3.14.0
+
+# For Databese
+# https://www.psycopg.org/docs/install.html
+psycopg2-binary==2.9.6

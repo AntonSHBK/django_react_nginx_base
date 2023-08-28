@@ -5,8 +5,6 @@
 # pull official base image
 FROM python:3.9.6-alpine as builder
 
-ARG SOURCE=../
-
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -18,8 +16,7 @@ RUN apk add -y --no-cache\
     gcc\
     python3-dev\
     musl-dev\
-    bash\
-    zsh
+    bash
 RUN  apk cache clean
 
 
@@ -31,8 +28,8 @@ RUN  apk cache clean
 
 # install dependencies
 RUN pip install --upgrade pip
-COPY $SOURCE/requirements/common.txt /tmp/common.txt
-COPY $SOURCE/requirements/production.txt /tmp/production.txt
+COPY pip_install_txt/common.txt /tmp/common.txt
+COPY pip_install_txt/production.txt /tmp/production.txt
 RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r /tmp/production.txt
 
 #########
@@ -45,7 +42,7 @@ FROM python:3.9.6-alpine
 # create the appropriate directories
 # ENV HOME=/app
 ENV APP_HOME=/app/backend
-RUN mkdir $APP_HOME
+RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
 # create the app user
@@ -54,7 +51,7 @@ RUN groupadd -g $CUID portal
 RUN useradd -u $CUID -g portal -s /bin/bash -m $APP_HOME
 
 # copy project
-COPY $SOURCE/backend $APP_HOME
+COPY backend $APP_HOME
 
 # install dependencies
 RUN apk update && apk add libpq
