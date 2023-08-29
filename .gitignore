@@ -1,6 +1,6 @@
 other
 backend/static
-backend/media
+# backend/media
 backend/static
 
 db
