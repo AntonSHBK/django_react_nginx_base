@@ -17,14 +17,6 @@ RUN apk add -y --no-cache\
     python3-dev\
     musl-dev\
     bash
-RUN  apk cache clean
-
-
-# lint
-# RUN pip install --upgrade pip
-# RUN pip install flake8==3.9.2
-# COPY . .
-# RUN flake8 --ignore=E501,F401 .
 
 # install dependencies
 RUN pip install --upgrade pip
@@ -46,12 +38,12 @@ RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
 # create the app user
-ARG CUID=1000
-RUN groupadd -g $CUID portal
-RUN useradd -u $CUID -g portal -s /bin/bash -m $APP_HOME
+# ARG CUID=1000
+RUN addgroup -S app && adduser -S app -G app
+
 
 # copy project
-COPY backend $APP_HOME
+COPY ./backend $APP_HOME
 
 # install dependencies
 RUN apk update && apk add libpq
@@ -60,7 +52,7 @@ COPY --from=builder /tmp/production.txt .
 RUN pip install --no-cache /wheels/*
 
 # chown all the files to the app user
-RUN chown -R portal:portal $APP_HOME
+RUN chown -R app:app $APP_HOME
 
 # change to the app user
-USER portal
+USER app
