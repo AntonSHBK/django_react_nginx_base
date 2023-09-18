@@ -9,3 +9,19 @@ djangorestframework==3.14.0
 # For Databese
 # https://www.psycopg.org/docs/install.html
 psycopg2-binary==2.9.6
+
+# For task
+# https://docs.celeryq.dev/en/stable/index.html
+celery==5.3.4
+
+# https://django-celery-beat.readthedocs.io/en/latest/
+django-celery-beat==2.5.0
+
+# https://django-celery-results.readthedocs.io/en/latest/
+django-celery-results==2.5.1
+
+# https://redis.io/docs/getting-started/
+redis==5.0.0
+
+# http://supervisord.org/installing.html
+supervisor==4.2.5

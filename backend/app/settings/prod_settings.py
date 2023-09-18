@@ -1,6 +1,7 @@
 from .common_settings import *
 
-INTERNAL_IPS = os.getenv('DEBUG_HOSTS').split(',')
+ALLOWED_HOSTS = os.environ.get("DEVELOPMENT_ALLOWED_HOSTS").split(",")
+
 
 INSTALLED_APPS += [
 

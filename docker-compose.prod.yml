@@ -25,44 +25,106 @@ services:
         python manage.py collectstatic --noinput
         python manage.py makemigrations
         python manage.py migrate
-        gunicorn portal.wsgi:application --bind 0.0.0.0:8000      
+        gunicorn app.wsgi:application --bind 0.0.0.0:8000      
     expose:
       - 8000    
     depends_on:
       - db  
     networks:
-      - db-net
-      - backend
+      - main_prod
 
 
   db:
     image: postgres:14.3-alpine
-    container_name: db
+    container_name: db-nansy
     volumes:
       - db_prod:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     env_file:
-      - ./env/production/.db.env
+      - ./env/prod/.db.env
     networks:
-      - db-net
+      - main_prod
+    
+
+  nodejs:
+    container_name: nodejs-nansy
+    build:
+      context: .
+      dockerfile: ./docker/dev/Dockerfile.front
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/app/frontend
+    depends_on:
+      - app
+    networks:
+      - main_prod
+    command: npm run start
   
 
   nginx:
+    container_name: nginx-nansy    
     build:
-      context: ./nginx
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./docker/prod/Dockerfile.nginx
     ports:
       - 8000:80
     depends_on:
-      - web
+      - app
     volumes:
       - static:/app/backend/static
       - media:/app/backend/media
+    networks:
+      - main_prod
     restart: always
 
+  
+  redis:
+    container_name: redis-nansy
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.redis
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"
+    env_file:
+      - ./env/prod/.env
+    networks:
+      - main_prod
+
+
+  supevisor:
+    container_name: supervisor-nansy
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/dev/Dockerfile.back 
+    working_dir: /app/backend
+    command:
+      - /bin/bash
+      - '-c'
+      - |
+        sleep 20s
+        supervisord -c /etc/supervisor/supervisord.conf 
+        supervisorctl reread
+        supervisorctl update
+        supervisorctl start all
+        supervisorctl status
+        echo  "Container in sleep status"
+        sleep 5d
+    
+    volumes:
+      - ./backend/logs/supervisor:/var/log/app/
+    env_file:
+      - ./env/prod/.env
+    depends_on:
+      - app
+      - redis
+    networks:
+      - main_prod
+
 networks:
-  backend:
-    driver: bridge
-  db-net:
+  main_prod:
     driver: bridge

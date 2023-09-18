@@ -1,18 +1,29 @@
 # django_react_nginx_base
+
+## About Project
 Base project for work with  Django and React
+
+- Django
+- Gunicorn
+- React.js
+- Postgres
+- Nginx
+- Celery
+- Docker
+- Docker Compose
 
 # Building
 Development build:
-
-`docker-compose build`
-
-`docker-compose up`
+```bush
+docker-compose build
+docker-compose up
+```
 
 Production build:
-
-`docker-compose -f docker-compose.prod.yml build`
-
-`docker-compose -f docker-compose.prod.yml up`
+```
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml up
+```
 
 Djanngo settings loacte in `backend/app/settings/settings.py`
 

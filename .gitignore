@@ -2,6 +2,8 @@ other
 backend/static
 # backend/media
 backend/static
+backend/logs
+backend/media
 
 db
 

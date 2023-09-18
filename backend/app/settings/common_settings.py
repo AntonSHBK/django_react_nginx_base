@@ -3,6 +3,13 @@ import os
 
 from pathlib import Path
 
+# ********** Import configs: **********
+# redis settings
+from app.config.redis import *
+
+# logging settings
+from app.config.logging import *
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -31,11 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     # https://docs.djangoproject.com/en/4.2/ref/contrib/humanize/
     'django.contrib.humanize', # tempaltes numbers and some dates
+    # https://django-celery-beat.readthedocs.io/en/latest/
+    'django_celery_beat',
+    # https://django-celery-results.readthedocs.io/en/latest/
+    'django_celery_results',
 ]
 
 RECENT_APPS = [
     # https://www.django-rest-framework.org/tutorial/quickstart/
     'rest_framework',
+    
 ]
 INSTALLED_APPS += RECENT_APPS
 
