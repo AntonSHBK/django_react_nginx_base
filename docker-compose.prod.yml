@@ -4,6 +4,7 @@ volumes:
   db_prod:
   static:
   media:
+  nginx:
   
 services:
   app:
@@ -51,7 +52,7 @@ services:
     container_name: nodejs-nansy
     build:
       context: .
-      dockerfile: ./docker/dev/Dockerfile.front
+      dockerfile: ./docker/prod/Dockerfile.front
     ports:
       - 3000:3000
     volumes:

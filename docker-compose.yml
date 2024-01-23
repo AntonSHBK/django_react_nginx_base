@@ -61,6 +61,8 @@ services:
       dockerfile: ./docker/Dockerfile.redis
     env_file:
       - ./env/dev/.env
+    volumes:
+      - ./logs/redis/:/var/log/redis/
 
 
   supevisor:

@@ -18,7 +18,7 @@ RUN apk add -y --no-cache\
     musl-dev\
     bash
 
-# install dependencies
+# install python dependencies
 RUN pip install --upgrade pip
 COPY pip_install_txt/common.txt /tmp/common.txt
 COPY pip_install_txt/production.txt /tmp/production.txt
@@ -32,7 +32,6 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r /tmp/p
 FROM python:3.9.6-alpine
 
 # create the appropriate directories
-# ENV HOME=/app
 ENV APP_HOME=/app/backend
 RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
